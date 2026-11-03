@@ -2,15 +2,15 @@
 #include <juce_audio_utils/juce_audio_utils.h>
 #include "PluginProcessor.h"
 
-// Hard edges, black and blood red. No rounded corners, no gradients.
+// Dark metal, glowing red. Hard edges everywhere except the knobs and the orb.
 class DrillLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
     DrillLookAndFeel();
 
-    void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
-                           float sliderPos, float minSliderPos, float maxSliderPos,
-                           juce::Slider::SliderStyle, juce::Slider&) override;
+    void drawRotarySlider (juce::Graphics&, int x, int y, int width, int height,
+                           float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle,
+                           juce::Slider&) override;
 
     void drawButtonBackground (juce::Graphics&, juce::Button&, const juce::Colour& backgroundColour,
                                bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
@@ -50,10 +50,14 @@ private:
         bool ready = false;
     };
 
+    struct Blob { float x, y, r, phase, speed; };
+
     void timerCallback() override;
     void chooseFile();
     void saveAs();
     void addRow (juce::Label&, juce::Slider&, const juce::String& text, const juce::String& paramId);
+    void paintOrb (juce::Graphics&);
+    void buildPanel();
 
     Audio2MidiProcessor& proc;
     DrillLookAndFeel lnf; // declared before the components so it outlives them
@@ -67,7 +71,10 @@ private:
     juce::TextButton saveButton { "SAVE AS" };
     std::unique_ptr<juce::FileChooser> chooser;
 
-    juce::Rectangle<int> titleArea, dropZone;
+    juce::Rectangle<int> titleArea, orbArea, statusArea;
+    juce::Image panel;
+    std::vector<Blob> blobs;
+
     bool dragOver = false;
     juce::String statusText;
     Audio2MidiProcessor::State lastState = Audio2MidiProcessor::State::Idle;
