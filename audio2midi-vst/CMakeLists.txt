@@ -36,8 +36,8 @@ juce_add_binary_data(Audio2MIDIModel SOURCES assets/nmp.onnx)
 juce_add_plugin(Audio2MIDI
   COMPANY_NAME "Hady Qassim"
   PLUGIN_MANUFACTURER_CODE Hdqs
-  PLUGIN_CODE A2m1
-  PRODUCT_NAME "Audio2MIDI"
+  PLUGIN_CODE Extn
+  PRODUCT_NAME "EXTORTION"
   FORMATS VST3 Standalone
   IS_SYNTH FALSE
   NEEDS_MIDI_INPUT FALSE
