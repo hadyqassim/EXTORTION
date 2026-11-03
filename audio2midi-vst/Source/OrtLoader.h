@@ -1,5 +1,16 @@
 #pragma once
 #include <juce_core/juce_core.h>
+
+#if JUCE_WINDOWS
+ #ifndef WIN32_LEAN_AND_MEAN
+  #define WIN32_LEAN_AND_MEAN
+ #endif
+ #ifndef NOMINMAX
+  #define NOMINMAX
+ #endif
+ #include <windows.h>
+#endif
+
 #include <onnxruntime_cxx_api.h>
 
 namespace a2m
