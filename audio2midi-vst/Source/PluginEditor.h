@@ -2,6 +2,22 @@
 #include <juce_audio_utils/juce_audio_utils.h>
 #include "PluginProcessor.h"
 
+// Hard edges, black and blood red. No rounded corners, no gradients.
+class DrillLookAndFeel : public juce::LookAndFeel_V4
+{
+public:
+    DrillLookAndFeel();
+
+    void drawLinearSlider (juce::Graphics&, int x, int y, int width, int height,
+                           float sliderPos, float minSliderPos, float maxSliderPos,
+                           juce::Slider::SliderStyle, juce::Slider&) override;
+
+    void drawButtonBackground (juce::Graphics&, juce::Button&, const juce::Colour& backgroundColour,
+                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
+
+    juce::Font getTextButtonFont (juce::TextButton&, int buttonHeight) override;
+};
+
 class Audio2MidiEditor : public juce::AudioProcessorEditor,
                          public juce::FileDragAndDropTarget,
                          private juce::Timer
@@ -11,6 +27,7 @@ public:
     ~Audio2MidiEditor() override;
 
     void paint (juce::Graphics&) override;
+    void paintOverChildren (juce::Graphics&) override;
     void resized() override;
     void mouseUp (const juce::MouseEvent&) override;
 
@@ -39,6 +56,7 @@ private:
     void addRow (juce::Label&, juce::Slider&, const juce::String& text, const juce::String& paramId);
 
     Audio2MidiProcessor& proc;
+    DrillLookAndFeel lnf; // declared before the components so it outlives them
 
     juce::Label bpmLabel, sensLabel, minNoteLabel, minVelLabel;
     juce::Slider bpmSlider, sensSlider, minNoteSlider, minVelSlider;
@@ -46,14 +64,17 @@ private:
     std::unique_ptr<Attach> bpmAttach, sensAttach, minNoteAttach, minVelAttach;
 
     DragHandle dragHandle;
-    juce::TextButton saveButton { "Save as..." };
+    juce::TextButton saveButton { "SAVE AS" };
     std::unique_ptr<juce::FileChooser> chooser;
 
-    juce::Rectangle<int> dropZone;
+    juce::Rectangle<int> titleArea, dropZone;
     bool dragOver = false;
     juce::String statusText;
     Audio2MidiProcessor::State lastState = Audio2MidiProcessor::State::Idle;
     float progressValue = 0.0f;
+
+    juce::Random rng;
+    float flicker = 1.0f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Audio2MidiEditor)
 };
